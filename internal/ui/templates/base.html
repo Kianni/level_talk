@@ -1,6 +1,6 @@
 {{ define "base.html" }}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ .Lang }}">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,8 +11,20 @@
   <body>
     <header class="site-header">
       <div class="container">
-        <h1>LevelTalk</h1>
-        <p class="muted">Make your vocabulary speak — in any language, at any level.</p>
+        <div class="header-content">
+          <div>
+            <h1>{{ t .Lang "app_name" }}</h1>
+            <p class="muted">{{ t .Lang "tagline" }}</p>
+          </div>
+          <div class="language-selector">
+            <label for="lang-select" class="sr-only">{{ t .Lang "language" }}</label>
+            <select id="lang-select" onchange="window.location.href='/lang/' + this.value">
+              {{ range .UILanguages }}
+              <option value="{{ .Code }}" {{ if eq $.Lang .Code }}selected{{ end }}>{{ .Name }}</option>
+              {{ end }}
+            </select>
+          </div>
+        </div>
       </div>
     </header>
     <main class="container">
@@ -20,7 +32,7 @@
     </main>
     <footer class="site-footer">
       <div class="container">
-        <small>© {{ currentYear }} LevelTalk — powered by Go &amp; htmx.</small>
+        <small>© {{ currentYear }} {{ t .Lang "app_name" }} — powered by Go &amp; htmx.</small>
       </div>
     </footer>
   </body>

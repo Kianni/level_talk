@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 
 	"leveltalk/internal/dialogs"
+	"leveltalk/internal/i18n"
 )
 
 // Server wires HTTP routing for LevelTalk.
@@ -54,12 +55,14 @@ func NewServer(logger *slog.Logger, service *dialogs.Service, templates *templat
 	r.Get("/dialogs/{id}", srv.handleDetail)
 	r.Get("/dialogs/download/text", srv.handleDownloadText)
 	r.Get("/dialogs/download/audio", srv.handleDownloadAudio)
+	r.Get("/lang/{lang}", srv.handleSetLanguage)
 
 	return r
 }
 
 func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	lang := s.getLanguage(r)
 	dialogsList, err := s.dialogs.SearchDialogs(ctx, dialogs.DialogFilter{Limit: 10})
 	if err != nil {
 		s.serverError(w, err)
@@ -73,9 +76,11 @@ func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
 		"Languages":   s.languages,
 		"CEFRLevels":  s.cefrLevels,
 		"Dialogs":     dialogsList,
-		"QueryParams": queryParams,
+		"QueryParams":  queryParams,
+		"Lang":        lang,
+		"UILanguages": s.getUILanguages(),
 	}
-	s.renderPage(w, "LevelTalk — multilingual dialogs", "index.html", payload)
+	s.renderPage(w, lang, "LevelTalk — multilingual dialogs", "index.html", payload)
 }
 
 func (s *Server) handleCreateDialog(w http.ResponseWriter, r *http.Request) {
@@ -105,6 +110,7 @@ func (s *Server) handleSearch(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) renderDialogList(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	lang := s.getLanguage(r)
 	filter := dialogs.DialogFilter{
 		Limit: 20,
 	}
@@ -131,10 +137,12 @@ func (s *Server) renderDialogList(w http.ResponseWriter, r *http.Request) {
 	s.renderPartial(w, "dialogs_list.html", map[string]any{
 		"Dialogs":     results,
 		"QueryParams": queryParams,
+		"Lang":        lang,
 	})
 }
 
 func (s *Server) handleDetail(w http.ResponseWriter, r *http.Request) {
+	lang := s.getLanguage(r)
 	idParam := chi.URLParam(r, "id")
 	dialogID, err := uuid.Parse(idParam)
 	if err != nil {
@@ -152,17 +160,26 @@ func (s *Server) handleDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.renderPage(w, "LevelTalk — dialog detail", "dialog_detail.html", map[string]any{
-		"Dialog": dlg,
+	s.renderPage(w, lang, "LevelTalk — dialog detail", "dialog_detail.html", map[string]any{
+		"Dialog":      dlg,
+		"Lang":        lang,
+		"UILanguages": s.getUILanguages(),
 	})
 }
 
 type pageView struct {
-	Title string
-	Body  template.HTML
+	Title       string
+	Body        template.HTML
+	Lang        string
+	UILanguages []UILanguage
 }
 
-func (s *Server) renderPage(w http.ResponseWriter, title, contentTemplate string, payload any) {
+type UILanguage struct {
+	Code string
+	Name string
+}
+
+func (s *Server) renderPage(w http.ResponseWriter, lang, title, contentTemplate string, payload any) {
 	var body bytes.Buffer
 	if err := s.templates.ExecuteTemplate(&body, contentTemplate, payload); err != nil {
 		s.logger.Error("render template failed", slog.String("template", contentTemplate), slog.String("error", err.Error()))
@@ -171,8 +188,10 @@ func (s *Server) renderPage(w http.ResponseWriter, title, contentTemplate string
 	}
 
 	data := pageView{
-		Title: title,
-		Body:  template.HTML(body.String()),
+		Title:       title,
+		Body:        template.HTML(body.String()),
+		Lang:        lang,
+		UILanguages: s.getUILanguages(),
 	}
 	s.executeTemplate(w, "base.html", data)
 }
@@ -497,6 +516,74 @@ func sanitizeFilename(name string) string {
 		name = name[:50]
 	}
 	return name
+}
+
+func (s *Server) getLanguage(r *http.Request) string {
+	// Check cookie first
+	if cookie, err := r.Cookie("lang"); err == nil && cookie.Value != "" {
+		if isValidLanguage(cookie.Value) {
+			return cookie.Value
+		}
+	}
+	// Check query param
+	if lang := r.URL.Query().Get("lang"); lang != "" && isValidLanguage(lang) {
+		return lang
+	}
+	// Check Accept-Language header
+	if acceptLang := r.Header.Get("Accept-Language"); acceptLang != "" {
+		// Simple parsing: take first language code
+		parts := strings.Split(acceptLang, ",")
+		if len(parts) > 0 {
+			langCode := strings.TrimSpace(strings.Split(parts[0], ";")[0])
+			if len(langCode) >= 2 {
+				langCode = langCode[:2]
+				if isValidLanguage(langCode) {
+					return langCode
+				}
+			}
+		}
+	}
+	return i18n.DefaultLanguage
+}
+
+func isValidLanguage(lang string) bool {
+	_, ok := i18n.LanguageNames[lang]
+	return ok
+}
+
+func (s *Server) getUILanguages() []UILanguage {
+	langs := []string{i18n.LangEN, i18n.LangFI, i18n.LangSV, i18n.LangRU, i18n.LangES, i18n.LangJA, i18n.LangDE}
+	result := make([]UILanguage, 0, len(langs))
+	for _, code := range langs {
+		result = append(result, UILanguage{
+			Code: code,
+			Name: i18n.LanguageNames[code],
+		})
+	}
+	return result
+}
+
+func (s *Server) handleSetLanguage(w http.ResponseWriter, r *http.Request) {
+	lang := chi.URLParam(r, "lang")
+	if !isValidLanguage(lang) {
+		lang = i18n.DefaultLanguage
+	}
+	
+	// Set cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "lang",
+		Value:    lang,
+		Path:     "/",
+		MaxAge:   365 * 24 * 60 * 60, // 1 year
+		SameSite: http.SameSiteLaxMode,
+	})
+	
+	// Redirect back to referer or home
+	redirect := r.Header.Get("Referer")
+	if redirect == "" {
+		redirect = "/"
+	}
+	http.Redirect(w, r, redirect, http.StatusSeeOther)
 }
 
 func parseWords(raw string) []string {

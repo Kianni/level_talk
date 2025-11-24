@@ -1,28 +1,28 @@
 {{ define "dialog_detail.html" }}
 <article class="panel">
-  <a href="/" class="link">&larr; Back</a>
+  <a href="/" class="link">&larr; {{ t .Lang "back" }}</a>
   <h2>{{ dialogName .Dialog.Title .Dialog.InputLanguage .Dialog.DialogLanguage .Dialog.CEFRLevel .Dialog.InputWords }}</h2>
   <dl class="meta">
     <div>
-      <dt>Input language</dt>
+      <dt>{{ t .Lang "input_language_label" }}</dt>
       <dd>{{ .Dialog.InputLanguage }}</dd>
     </div>
     <div>
-      <dt>Dialog language</dt>
+      <dt>{{ t .Lang "dialog_language_label" }}</dt>
       <dd>{{ .Dialog.DialogLanguage }}</dd>
     </div>
     <div>
-      <dt>CEFR</dt>
+      <dt>{{ t .Lang "cefr" }}</dt>
       <dd>{{ .Dialog.CEFRLevel }}</dd>
     </div>
     <div>
-      <dt>Created</dt>
+      <dt>{{ t .Lang "created" }}</dt>
       <dd>{{ formatTime .Dialog.CreatedAt }}</dd>
     </div>
   </dl>
   <section class="vocabulary-section">
-    <h3>Vocabulary</h3>
-    <p class="muted">Words from {{ .Dialog.InputLanguage }} → {{ .Dialog.DialogLanguage }}:</p>
+    <h3>{{ t .Lang "vocabulary" }}</h3>
+    <p class="muted">{{ t .Lang "words_from" }} {{ .Dialog.InputLanguage }} → {{ .Dialog.DialogLanguage }}:</p>
     <div class="vocabulary-list">
       {{ range .Dialog.InputWords }}
       {{ $word := . }}
@@ -34,7 +34,7 @@
         <span class="vocab-translation">{{ $translation }}</span>
         {{ else }}
         <span class="vocab-arrow">→</span>
-        <span class="vocab-translation muted">(translation in dialog)</span>
+        <span class="vocab-translation muted">{{ t $.Lang "translation_in_dialog" }}</span>
         {{ end }}
       </div>
       {{ end }}

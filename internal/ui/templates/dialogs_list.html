@@ -1,10 +1,10 @@
 {{ define "dialogs_list.html" }}
 {{ if not .Dialogs }}
-<p class="muted">No dialogs yet. Generate one!</p>
+<p class="muted">{{ t .Lang "no_dialogs" }}</p>
 {{ else }}
 <div class="download-buttons-inline">
-  <button type="button" id="download-text-btn" class="button-link secondary" disabled>Download Selected Text</button>
-  <button type="button" id="download-audio-btn" class="button-link secondary" disabled>Download Selected Audio</button>
+  <button type="button" id="download-text-btn" class="button-link secondary" disabled>{{ t .Lang "download_selected_text" }}</button>
+  <button type="button" id="download-audio-btn" class="button-link secondary" disabled>{{ t .Lang "download_selected_audio" }}</button>
 </div>
 <script>
 (function() {
@@ -62,12 +62,12 @@
 <table class="dialog-table">
   <thead>
     <tr>
-      <th><input type="checkbox" id="select-all" title="Select all"></th>
-      <th>Name</th>
-      <th>Input</th>
-      <th>Dialog</th>
-      <th>CEFR</th>
-      <th>Created</th>
+      <th><input type="checkbox" id="select-all" title="{{ t .Lang "select_all" }}"></th>
+      <th>{{ t .Lang "name" }}</th>
+      <th>{{ t .Lang "input" }}</th>
+      <th>{{ t .Lang "dialog" }}</th>
+      <th>{{ t .Lang "cefr" }}</th>
+      <th>{{ t .Lang "created" }}</th>
       <th></th>
     </tr>
   </thead>
@@ -81,7 +81,7 @@
       <td>{{ .CEFRLevel }}</td>
       <td>{{ formatTime .CreatedAt }}</td>
       <td>
-        <a class="link" href="/dialogs/{{ .ID }}">Open</a>
+        <a class="link" href="/dialogs/{{ .ID }}">{{ t $.Lang "open" }}</a>
       </td>
     </tr>
     {{ end }}

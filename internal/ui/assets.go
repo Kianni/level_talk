@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"leveltalk/internal/i18n"
 )
 
 //go:embed templates/*.html
@@ -27,6 +29,9 @@ func ParseTemplates() (*template.Template, error) {
 			return template.URL(u)
 		},
 		"dialogName": dialogName,
+		"t": func(lang, key string) template.HTML {
+			return template.HTML(i18n.Get(lang, key))
+		},
 	}
 
 	root := template.New("base").Funcs(funcMap)

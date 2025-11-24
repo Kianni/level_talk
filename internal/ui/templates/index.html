@@ -1,9 +1,9 @@
 {{ define "index.html" }}
 <section class="panel">
-  <h2>Create a dialog</h2>
+  <h2>{{ t .Lang "create_dialog" }}</h2>
   <form hx-post="/dialogs" hx-target="#dialog-list" hx-swap="innerHTML" class="grid grid-2">
     <label>
-      Input language
+      {{ t .Lang "input_language" }}
       <select name="input_language" required>
         {{ range .Languages }}
         <option value="{{ . }}">{{ . }}</option>
@@ -11,7 +11,7 @@
       </select>
     </label>
     <label>
-      Dialog language
+      {{ t .Lang "dialog_language" }}
       <select name="dialog_language" required>
         {{ range .Languages }}
         <option value="{{ . }}">{{ . }}</option>
@@ -19,7 +19,7 @@
       </select>
     </label>
     <label>
-      CEFR level
+      {{ t .Lang "cefr_level" }}
       <select name="cefr_level" required>
         {{ range .CEFRLevels }}
         <option value="{{ . }}">{{ . }}</option>
@@ -27,54 +27,54 @@
       </select>
     </label>
     <label class="full">
-      Words / phrases
+      {{ t .Lang "words_phrases" }}
       <textarea name="input_words" rows="4" placeholder="Kompass, Bus, Shop" required></textarea>
     </label>
     <button type="submit" class="primary" id="generate-btn" hx-indicator="#generate-spinner">
-      <span id="generate-text">Generate dialog</span>
+      <span id="generate-text">{{ t .Lang "generate_dialog" }}</span>
       <span id="generate-spinner" class="htmx-indicator spinner"></span>
     </button>
   </form>
 </section>
 
 <section class="panel">
-  <h2>Search saved dialogs</h2>
+  <h2>{{ t .Lang "search_dialogs" }}</h2>
   <form hx-get="/dialogs/search" hx-target="#dialog-list" hx-swap="innerHTML" class="grid grid-3">
     <label>
-      Input language
+      {{ t .Lang "input_language" }}
       <select name="input_language">
-        <option value="">Any</option>
+        <option value="">{{ t .Lang "any" }}</option>
         {{ range .Languages }}
         <option value="{{ . }}">{{ . }}</option>
         {{ end }}
       </select>
     </label>
     <label>
-      Dialog language
+      {{ t .Lang "dialog_language" }}
       <select name="dialog_language">
-        <option value="">Any</option>
+        <option value="">{{ t .Lang "any" }}</option>
         {{ range .Languages }}
         <option value="{{ . }}">{{ . }}</option>
         {{ end }}
       </select>
     </label>
     <label>
-      CEFR level
+      {{ t .Lang "cefr_level" }}
       <select name="cefr_level">
-        <option value="">Any</option>
+        <option value="">{{ t .Lang "any" }}</option>
         {{ range .CEFRLevels }}
         <option value="{{ . }}">{{ . }}</option>
         {{ end }}
       </select>
     </label>
-    <button type="submit" class="secondary">Filter</button>
+    <button type="submit" class="secondary">{{ t .Lang "filter" }}</button>
   </form>
 </section>
 
 <section class="panel">
   <div class="header-row">
-    <h2>Dialogs</h2>
-    <small>Latest results</small>
+    <h2>{{ t .Lang "dialogs" }}</h2>
+    <small>{{ t .Lang "latest_results" }}</small>
   </div>
   <div id="dialog-list">
     {{ template "dialogs_list.html" . }}
