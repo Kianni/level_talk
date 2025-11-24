@@ -120,8 +120,9 @@ func (c *OpenAIClient) GenerateDialog(ctx context.Context, params dialogs.Genera
 				Role: "system",
 				Content: "You are an expert language tutor. Produce monolingual dialogs entirely in the target language in valid JSON. " +
 					"Both speakers must speak ONLY in the dialog language. " +
-					"Always respond ONLY with JSON matching the schema {\"turns\":[{\"speaker\":\"string\",\"text\":\"string\"}]} " +
-					"and naturally incorporate the provided vocabulary from the input language into the target language context. Do not add commentary.",
+					"IMPORTANT: You must FIRST translate all provided words/phrases from the input language into the target language, " +
+					"then use ONLY the translated versions in the dialog. Never include words from the input language in the dialog. " +
+					"Always respond ONLY with JSON matching the schema {\"turns\":[{\"speaker\":\"string\",\"text\":\"string\"}]}. Do not add commentary.",
 			},
 			{
 				Role:    "user",
@@ -215,15 +216,18 @@ func buildUserPrompt(params dialogs.GenerateDialogParams) string {
 	sb.WriteString(params.DialogLanguage)
 	sb.WriteString(". The learner's native language is ")
 	sb.WriteString(params.InputLanguage)
-	sb.WriteString(", and you should naturally incorporate these words/phrases from ")
+	sb.WriteString(". You are given these words/phrases in ")
 	sb.WriteString(params.InputLanguage)
-	sb.WriteString(" into the ")
-	sb.WriteString(params.DialogLanguage)
-	sb.WriteString(" dialog context: ")
+	sb.WriteString(": ")
 	sb.WriteString(strings.Join(params.InputWords, ", "))
-	sb.WriteString(". Provide between 6 and 10 turns. The entire dialog must be in ")
+	sb.WriteString(". FIRST translate each word/phrase into ")
 	sb.WriteString(params.DialogLanguage)
-	sb.WriteString(" only.")
+	sb.WriteString(", then naturally incorporate the TRANSLATED versions into the dialog. ")
+	sb.WriteString("The dialog must contain ONLY ")
+	sb.WriteString(params.DialogLanguage)
+	sb.WriteString(" - no words from ")
+	sb.WriteString(params.InputLanguage)
+	sb.WriteString(" should appear. Provide between 6 and 10 turns.")
 	return sb.String()
 }
 

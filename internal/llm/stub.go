@@ -22,8 +22,9 @@ func NewStubClient(logger *slog.Logger) *StubClient {
 // GenerateDialog creates a deterministic dialog that includes all input words.
 func (s *StubClient) GenerateDialog(ctx context.Context, params dialogs.GenerateDialogParams) (dialogs.Dialog, error) {
 	// In production, this is where we'd craft a prompt like:
-	// "You are a language tutor. Create a CEFR {CEFRLevel} level dialog in {DialogLanguage}
-	// that naturally uses the following vocabulary: {InputWords}. Respond using JSON with speaker turns."
+	// "You are a language tutor. Create a CEFR {CEFRLevel} level dialog entirely in {DialogLanguage}.
+	// First translate the vocabulary from {InputLanguage} to {DialogLanguage}, then use only the
+	// translated versions in the dialog. Respond using JSON with speaker turns."
 
 	if len(params.InputWords) == 0 {
 		return dialogs.Dialog{}, fmt.Errorf("input words required")
