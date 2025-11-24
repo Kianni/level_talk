@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: leveltalk
+      POSTGRES_USER: leveltalk
+      POSTGRES_PASSWORD: leveltalk
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      PORT: "8080"
+      DB_DSN: postgres://leveltalk:leveltalk@db:5432/leveltalk?sslmode=disable
+      LLM_API_KEY: ""
+      ELEVENLABS_API_KEY: ""
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
+
+

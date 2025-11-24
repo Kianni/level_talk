@@ -1,0 +1,29 @@
+{{ define "base.html" }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ .Title }}</title>
+    <link rel="stylesheet" href="/static/css/app.css">
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1>LevelTalk</h1>
+        <p class="muted">Generate CEFR-aligned bilingual dialogs in seconds.</p>
+      </div>
+    </header>
+    <main class="container">
+      {{ .Body }}
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <small>© {{ currentYear }} LevelTalk — powered by Go &amp; htmx.</small>
+      </div>
+    </footer>
+  </body>
+</html>
+{{ end }}
+

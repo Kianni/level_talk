@@ -1,0 +1,81 @@
+{{ define "index.html" }}
+<section class="panel">
+  <h2>Create a dialog</h2>
+  <form hx-post="/dialogs" hx-target="#dialog-list" hx-swap="innerHTML" class="grid grid-2">
+    <label>
+      Input language
+      <select name="input_language" required>
+        {{ range .Languages }}
+        <option value="{{ . }}">{{ . }}</option>
+        {{ end }}
+      </select>
+    </label>
+    <label>
+      Dialog language
+      <select name="dialog_language" required>
+        {{ range .Languages }}
+        <option value="{{ . }}">{{ . }}</option>
+        {{ end }}
+      </select>
+    </label>
+    <label>
+      CEFR level
+      <select name="cefr_level" required>
+        {{ range .CEFRLevels }}
+        <option value="{{ . }}">{{ . }}</option>
+        {{ end }}
+      </select>
+    </label>
+    <label class="full">
+      Words / phrases
+      <textarea name="input_words" rows="4" placeholder="дом, автобус, магазин" required></textarea>
+    </label>
+    <button type="submit" class="primary">Generate dialog</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Search saved dialogs</h2>
+  <form hx-get="/dialogs/search" hx-target="#dialog-list" hx-swap="innerHTML" class="grid grid-3">
+    <label>
+      Input language
+      <select name="input_language">
+        <option value="">Any</option>
+        {{ range .Languages }}
+        <option value="{{ . }}">{{ . }}</option>
+        {{ end }}
+      </select>
+    </label>
+    <label>
+      Dialog language
+      <select name="dialog_language">
+        <option value="">Any</option>
+        {{ range .Languages }}
+        <option value="{{ . }}">{{ . }}</option>
+        {{ end }}
+      </select>
+    </label>
+    <label>
+      CEFR level
+      <select name="cefr_level">
+        <option value="">Any</option>
+        {{ range .CEFRLevels }}
+        <option value="{{ . }}">{{ . }}</option>
+        {{ end }}
+      </select>
+    </label>
+    <button type="submit" class="secondary">Filter</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="header-row">
+    <h2>Dialogs</h2>
+    <small>Latest results</small>
+  </div>
+  <div id="dialog-list">
+    {{ template "dialogs_list.html" . }}
+  </div>
+</section>
+{{ end }}
+

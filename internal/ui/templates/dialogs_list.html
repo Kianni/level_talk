@@ -1,0 +1,33 @@
+{{ define "dialogs_list.html" }}
+{{ if not .Dialogs }}
+<p class="muted">No dialogs yet. Generate one!</p>
+{{ else }}
+<table class="dialog-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Input</th>
+      <th>Dialog</th>
+      <th>CEFR</th>
+      <th>Created</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .Dialogs }}
+    <tr>
+      <td>{{ shortID .ID }}</td>
+      <td>{{ .InputLanguage }}</td>
+      <td>{{ .DialogLanguage }}</td>
+      <td>{{ .CEFRLevel }}</td>
+      <td>{{ formatTime .CreatedAt }}</td>
+      <td>
+        <a class="link" href="/dialogs/{{ .ID }}">Open</a>
+      </td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+{{ end }}
+{{ end }}
+

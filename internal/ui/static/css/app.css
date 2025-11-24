@@ -1,0 +1,134 @@
+:root {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+body {
+  margin: 0;
+  background: #f8fafc;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.site-header,
+.site-footer {
+  background: #0f172a;
+  color: #fff;
+}
+
+.panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  align-items: end;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+input,
+select,
+textarea {
+  margin-top: 0.25rem;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5f5;
+  font: inherit;
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.primary {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+}
+
+.secondary {
+  background: #fff;
+  border: 1px solid #cbd5f5;
+  color: #0f172a;
+}
+
+.dialog-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dialog-table th,
+.dialog-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.muted {
+  color: #94a3b8;
+}
+
+.link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.turn {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.meta dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.meta dd {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+

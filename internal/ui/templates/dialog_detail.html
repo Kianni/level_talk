@@ -1,0 +1,34 @@
+{{ define "dialog_detail.html" }}
+<article class="panel">
+  <a href="/" class="link">&larr; Back</a>
+  <h2>Dialog {{ shortID .Dialog.ID }}</h2>
+  <dl class="meta">
+    <div>
+      <dt>Input language</dt>
+      <dd>{{ .Dialog.InputLanguage }}</dd>
+    </div>
+    <div>
+      <dt>Dialog language</dt>
+      <dd>{{ .Dialog.DialogLanguage }}</dd>
+    </div>
+    <div>
+      <dt>CEFR</dt>
+      <dd>{{ .Dialog.CEFRLevel }}</dd>
+    </div>
+    <div>
+      <dt>Created</dt>
+      <dd>{{ formatTime .Dialog.CreatedAt }}</dd>
+    </div>
+  </dl>
+  <section>
+    {{ range .Dialog.Turns }}
+    <div class="turn">
+      <strong>{{ .Speaker }}</strong>
+      <p>{{ .Text }}</p>
+      <audio controls src="{{ .AudioURL }}"></audio>
+    </div>
+    {{ end }}
+  </section>
+</article>
+{{ end }}
+
