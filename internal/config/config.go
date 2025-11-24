@@ -10,6 +10,7 @@ type Config struct {
 	Port             string
 	DBDSN            string
 	LLMAPIKey        string
+	LLMModel         string
 	ElevenLabsAPIKey string
 }
 
@@ -19,6 +20,7 @@ func Load() (Config, error) {
 		Port:             getEnv("PORT", "8080"),
 		DBDSN:            os.Getenv("DB_DSN"),
 		LLMAPIKey:        os.Getenv("LLM_API_KEY"),
+		LLMModel:         os.Getenv("LLM_MODEL"),
 		ElevenLabsAPIKey: os.Getenv("ELEVENLABS_API_KEY"),
 	}
 

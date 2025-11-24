@@ -24,13 +24,30 @@ The app reads environment variables via `internal/config`:
 | --- | --- | --- | --- |
 | `DB_DSN` | PostgreSQL connection string | ✅ | `postgres://leveltalk:leveltalk@localhost:5432/leveltalk?sslmode=disable` |
 | `PORT` | HTTP port (default `8080`) | ❌ | `8080` |
-| `LLM_API_KEY` | placeholder for future LLM integration | ❌ | `sk-...` |
+| `LLM_API_KEY` | OpenAI API key (switches off stub) | ❌ | `sk-proj-...` |
+| `LLM_MODEL` | OpenAI model identifier | ❌ | `gpt-4o-mini` |
 | `ELEVENLABS_API_KEY` | placeholder for ElevenLabs | ❌ | `elevenlabs-...` |
+
+## Environment setup
+
+Copy `env.example` to `.env` and fill in any secrets (API keys, etc.). The file is ignored by git:
+
+```bash
+cp env.example .env
+```
+
+When running via Docker Compose the `.env` file is loaded automatically. For local `go run` executions, export the values in your shell (`source .env` on Unix shells or `dotenv` tools).
+
+## LLM integration (OpenAI)
+
+- Set `LLM_API_KEY` to your OpenAI key and `LLM_MODEL` to the desired chat model. `gpt-4o-mini` is a good balance of quality and cost for dialog generation.
+- When both variables are present, the server automatically switches from the deterministic stub to the real OpenAI client and calls `https://api.openai.com/v1/chat/completions`.
+- Leave either value empty to keep using the stubbed dialog generator (useful for local development without network calls).
 
 ## Running locally (without Docker)
 
 ```bash
-export DB_DSN="postgres://leveltalk:leveltalk@localhost:5432/leveltalk?sslmode=disable"
+export $(grep -v '^#' .env | xargs) # or use direnv
 go run ./cmd/server
 ```
 

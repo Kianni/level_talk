@@ -14,13 +14,16 @@ services:
 
   app:
     build: .
+    env_file:
+      - .env
     depends_on:
       - db
     environment:
-      PORT: "8080"
-      DB_DSN: postgres://leveltalk:leveltalk@db:5432/leveltalk?sslmode=disable
-      LLM_API_KEY: ""
-      ELEVENLABS_API_KEY: ""
+      PORT: "${PORT:-8080}"
+      DB_DSN: "${DB_DSN:-postgres://leveltalk:leveltalk@db:5432/leveltalk?sslmode=disable}"
+      LLM_API_KEY: "${LLM_API_KEY:-}"
+      LLM_MODEL: "${LLM_MODEL:-}"
+      ELEVENLABS_API_KEY: "${ELEVENLABS_API_KEY:-}"
     ports:
       - "8080:8080"
 

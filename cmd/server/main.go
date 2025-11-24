@@ -57,7 +57,17 @@ func run(logger *slog.Logger) error {
 	}
 
 	repo := storage.NewDialogRepository(db)
-	dialogService := dialogs.NewService(repo, llm.NewStubClient(logger), tts.NewStubClient())
+
+	var llmClient dialogs.LLMClient
+	llmClient = llm.NewStubClient(logger)
+	if cfg.LLMAPIKey != "" && cfg.LLMModel != "" {
+		logger.Info("using OpenAI LLM client", slog.String("model", cfg.LLMModel))
+		llmClient = llm.NewOpenAIClient(logger, cfg.LLMAPIKey, cfg.LLMModel, nil)
+	} else {
+		logger.Info("LLM API key or model missing; falling back to stub client")
+	}
+
+	dialogService := dialogs.NewService(repo, llmClient, tts.NewStubClient())
 
 	tmpl, err := ui.ParseTemplates()
 	if err != nil {
