@@ -20,6 +20,26 @@
       <dd>{{ formatTime .Dialog.CreatedAt }}</dd>
     </div>
   </dl>
+  <section class="vocabulary-section">
+    <h3>Vocabulary</h3>
+    <p class="muted">Words from {{ .Dialog.InputLanguage }} → {{ .Dialog.DialogLanguage }}:</p>
+    <div class="vocabulary-list">
+      {{ range .Dialog.InputWords }}
+      {{ $word := . }}
+      {{ $translation := index $.Dialog.Translations $word }}
+      <div class="vocab-item">
+        <span class="vocab-word">{{ $word }}</span>
+        {{ if $translation }}
+        <span class="vocab-arrow">→</span>
+        <span class="vocab-translation">{{ $translation }}</span>
+        {{ else }}
+        <span class="vocab-arrow">→</span>
+        <span class="vocab-translation muted">(translation in dialog)</span>
+        {{ end }}
+      </div>
+      {{ end }}
+    </div>
+  </section>
   <section>
     {{ range .Dialog.Turns }}
     <div class="turn">

@@ -185,9 +185,22 @@ func (s *Server) clientError(w http.ResponseWriter, status int, msg string) {
 }
 
 func parseWords(raw string) []string {
-	fields := strings.FieldsFunc(raw, func(r rune) bool {
-		return r == ',' || r == '\n' || r == '\r'
-	})
+	// First try splitting by comma (preferred format)
+	if strings.Contains(raw, ",") {
+		fields := strings.FieldsFunc(raw, func(r rune) bool {
+			return r == ',' || r == '\n' || r == '\r'
+		})
+		result := make([]string, 0, len(fields))
+		for _, field := range fields {
+			trimmed := strings.TrimSpace(field)
+			if trimmed != "" {
+				result = append(result, trimmed)
+			}
+		}
+		return result
+	}
+	// If no commas, split by whitespace
+	fields := strings.Fields(raw)
 	result := make([]string, 0, len(fields))
 	for _, field := range fields {
 		trimmed := strings.TrimSpace(field)

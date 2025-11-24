@@ -30,7 +30,10 @@
       Words / phrases
       <textarea name="input_words" rows="4" placeholder="дом, автобус, магазин" required></textarea>
     </label>
-    <button type="submit" class="primary">Generate dialog</button>
+    <button type="submit" class="primary" id="generate-btn" hx-indicator="#generate-spinner">
+      <span id="generate-text">Generate dialog</span>
+      <span id="generate-spinner" class="htmx-indicator spinner"></span>
+    </button>
   </form>
 </section>
 

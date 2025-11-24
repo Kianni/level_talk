@@ -48,8 +48,12 @@ func (s *Service) CreateDialog(ctx context.Context, input CreateDialogInput) (Di
 		DialogLanguage: input.DialogLanguage,
 		CEFRLevel:      input.CEFRLevel,
 		InputWords:     input.InputWords,
+		Translations:   generated.Translations,
 		Turns:          generated.Turns,
 		CreatedAt:      now,
+	}
+	if dlg.Translations == nil {
+		dlg.Translations = make(map[string]string)
 	}
 
 	for i := range dlg.Turns {

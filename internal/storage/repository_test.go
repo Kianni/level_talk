@@ -26,9 +26,10 @@ func TestDialogRepositoryCreate(t *testing.T) {
 		DialogLanguage: "es",
 		CEFRLevel:      "B1",
 		InputWords:     []string{"дом", "улица"},
+		Translations:   map[string]string{"дом": "casa", "улица": "calle"},
 		CreatedAt:      now,
 		Turns: []dialogs.DialogTurn{
-			{ID: uuid.New(), Speaker: "Ana", Text: "Hola дом", AudioURL: "/static/audio/placeholder.mp3", Position: 0},
+			{ID: uuid.New(), Speaker: "Ana", Text: "Hola casa", AudioURL: "/static/audio/placeholder.mp3", Position: 0},
 		},
 	}
 
@@ -39,6 +40,7 @@ func TestDialogRepositoryCreate(t *testing.T) {
 			dlg.InputLanguage,
 			dlg.DialogLanguage,
 			dlg.CEFRLevel,
+			sqlmock.AnyArg(),
 			sqlmock.AnyArg(),
 			sqlmock.AnyArg(),
 			dlg.CreatedAt,
@@ -67,14 +69,15 @@ func TestDialogRepositorySearch(t *testing.T) {
 	defer db.Close()
 
 	repo := NewDialogRepository(db)
-	wordsJSON, _ := json.Marshal([]string{"casa"})
+	wordsJSON, _ := json.Marshal([]string{"дом"})
 	turnsJSON, _ := json.Marshal([]dialogs.DialogTurn{
 		{Speaker: "Ana", Text: "Hola casa", AudioURL: "/static/audio/placeholder.mp3"},
 	})
+	translationsJSON, _ := json.Marshal(map[string]string{"дом": "casa"})
 
 	rows := sqlmock.NewRows([]string{
-		"id", "input_language", "dialog_language", "cefr_level", "input_words", "dialog_json", "created_at",
-	}).AddRow(uuid.New(), "ru", "es", "A2", wordsJSON, turnsJSON, time.Now())
+		"id", "input_language", "dialog_language", "cefr_level", "input_words", "dialog_json", "translations", "created_at",
+	}).AddRow(uuid.New(), "ru", "es", "A2", wordsJSON, turnsJSON, translationsJSON, time.Now())
 
 	mock.ExpectQuery("SELECT id, input_language").
 		WithArgs("ru", "es", "A2", 5).

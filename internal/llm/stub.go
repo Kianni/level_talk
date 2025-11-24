@@ -51,7 +51,8 @@ func (s *StubClient) GenerateDialog(ctx context.Context, params dialogs.Generate
 	)
 
 	return dialogs.Dialog{
-		Turns: turns,
+		Turns:        turns,
+		Translations: make(map[string]string), // Stub doesn't provide translations
 	}, nil
 }
 

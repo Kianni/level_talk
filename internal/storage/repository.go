@@ -41,10 +41,15 @@ func (r *DialogRepository) Create(ctx context.Context, dlg dialogs.Dialog) error
 		return fmt.Errorf("marshal turns: %w", err)
 	}
 
+	translationsJSON, err := json.Marshal(dlg.Translations)
+	if err != nil {
+		return fmt.Errorf("marshal translations: %w", err)
+	}
+
 	const insertDialog = `
 		INSERT INTO dialogs (
-			id, input_language, dialog_language, cefr_level, input_words, dialog_json, created_at
-		) VALUES ($1,$2,$3,$4,$5,$6,$7)
+			id, input_language, dialog_language, cefr_level, input_words, dialog_json, translations, created_at
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
 	`
 	if _, err := tx.ExecContext(ctx, insertDialog,
 		dlg.ID,
@@ -53,6 +58,7 @@ func (r *DialogRepository) Create(ctx context.Context, dlg dialogs.Dialog) error
 		dlg.CEFRLevel,
 		wordsJSON,
 		turnsJSON,
+		translationsJSON,
 		dlg.CreatedAt,
 	); err != nil {
 		return fmt.Errorf("insert dialog: %w", err)
@@ -84,18 +90,20 @@ func (r *DialogRepository) Create(ctx context.Context, dlg dialogs.Dialog) error
 // GetByID fetches a dialog with all turns.
 func (r *DialogRepository) GetByID(ctx context.Context, id uuid.UUID) (dialogs.Dialog, error) {
 	const queryDialog = `
-		SELECT id, input_language, dialog_language, cefr_level, input_words, created_at
+		SELECT id, input_language, dialog_language, cefr_level, input_words, COALESCE(translations, '{}'::jsonb), created_at
 		FROM dialogs
 		WHERE id = $1
 	`
 	var dlg dialogs.Dialog
 	var inputWordsJSON []byte
+	var translationsJSON []byte
 	if err := r.db.QueryRowContext(ctx, queryDialog, id).Scan(
 		&dlg.ID,
 		&dlg.InputLanguage,
 		&dlg.DialogLanguage,
 		&dlg.CEFRLevel,
 		&inputWordsJSON,
+		&translationsJSON,
 		&dlg.CreatedAt,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -105,6 +113,12 @@ func (r *DialogRepository) GetByID(ctx context.Context, id uuid.UUID) (dialogs.D
 	}
 	if err := json.Unmarshal(inputWordsJSON, &dlg.InputWords); err != nil {
 		return dialogs.Dialog{}, fmt.Errorf("unmarshal input words: %w", err)
+	}
+	if err := json.Unmarshal(translationsJSON, &dlg.Translations); err != nil {
+		return dialogs.Dialog{}, fmt.Errorf("unmarshal translations: %w", err)
+	}
+	if dlg.Translations == nil {
+		dlg.Translations = make(map[string]string)
 	}
 
 	const queryTurns = `
@@ -138,7 +152,7 @@ func (r *DialogRepository) Search(ctx context.Context, filter dialogs.DialogFilt
 	args := []any{}
 
 	query.WriteString(`
-		SELECT id, input_language, dialog_language, cefr_level, input_words, dialog_json, created_at
+		SELECT id, input_language, dialog_language, cefr_level, input_words, dialog_json, COALESCE(translations, '{}'::jsonb), created_at
 		FROM dialogs
 		WHERE 1=1
 	`)
@@ -178,9 +192,10 @@ func (r *DialogRepository) Search(ctx context.Context, filter dialogs.DialogFilt
 	var result []dialogs.Dialog
 	for rows.Next() {
 		var (
-			dlg         dialogs.Dialog
-			inputWords  []byte
-			dialogTurns []byte
+			dlg          dialogs.Dialog
+			inputWords   []byte
+			dialogTurns  []byte
+			translations []byte
 		)
 		if err := rows.Scan(
 			&dlg.ID,
@@ -189,6 +204,7 @@ func (r *DialogRepository) Search(ctx context.Context, filter dialogs.DialogFilt
 			&dlg.CEFRLevel,
 			&inputWords,
 			&dialogTurns,
+			&translations,
 			&dlg.CreatedAt,
 		); err != nil {
 			return nil, fmt.Errorf("scan dialog: %w", err)
@@ -198,6 +214,12 @@ func (r *DialogRepository) Search(ctx context.Context, filter dialogs.DialogFilt
 		}
 		if err := json.Unmarshal(dialogTurns, &dlg.Turns); err != nil {
 			return nil, fmt.Errorf("unmarshal turns: %w", err)
+		}
+		if err := json.Unmarshal(translations, &dlg.Translations); err != nil {
+			return nil, fmt.Errorf("unmarshal translations: %w", err)
+		}
+		if dlg.Translations == nil {
+			dlg.Translations = make(map[string]string)
 		}
 		result = append(result, dlg)
 	}

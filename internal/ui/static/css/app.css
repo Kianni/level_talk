@@ -132,3 +132,89 @@ button {
   font-weight: 600;
 }
 
+.spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.htmx-indicator {
+  display: none !important;
+  opacity: 0;
+  transition: opacity 200ms ease-in;
+}
+
+.htmx-request .htmx-indicator,
+.htmx-indicator.htmx-request,
+button.htmx-request .htmx-indicator {
+  display: inline-block !important;
+  opacity: 1;
+}
+
+.htmx-request #generate-text {
+  opacity: 0.7;
+}
+
+button.htmx-request {
+  pointer-events: none;
+  opacity: 0.9;
+  cursor: wait;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.vocabulary-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+
+.vocabulary-section h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.vocabulary-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.vocab-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: #fff;
+  border: 1px solid #cbd5f5;
+  border-radius: 6px;
+}
+
+.vocab-word {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.vocab-arrow {
+  color: #94a3b8;
+  font-weight: 300;
+}
+
+.vocab-translation {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2563eb;
+}
+

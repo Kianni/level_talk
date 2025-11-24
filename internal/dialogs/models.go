@@ -23,6 +23,7 @@ type Dialog struct {
 	DialogLanguage string
 	CEFRLevel      string
 	InputWords     []string
+	Translations   map[string]string // Maps input word to translated word
 	Turns          []DialogTurn
 	CreatedAt      time.Time
 }
