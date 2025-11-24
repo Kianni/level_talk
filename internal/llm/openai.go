@@ -118,9 +118,10 @@ func (c *OpenAIClient) GenerateDialog(ctx context.Context, params dialogs.Genera
 		Messages: []chatMessage{
 			{
 				Role: "system",
-				Content: "You are an expert language tutor. Produce bilingual dialogs in valid JSON. " +
+				Content: "You are an expert language tutor. Produce monolingual dialogs entirely in the target language in valid JSON. " +
+					"Both speakers must speak ONLY in the dialog language. " +
 					"Always respond ONLY with JSON matching the schema {\"turns\":[{\"speaker\":\"string\",\"text\":\"string\"}]} " +
-					"and include the provided vocabulary naturally. Do not add commentary.",
+					"and naturally incorporate the provided vocabulary from the input language into the target language context. Do not add commentary.",
 			},
 			{
 				Role:    "user",
@@ -208,13 +209,21 @@ func buildUserPrompt(params dialogs.GenerateDialogParams) string {
 	var sb strings.Builder
 	sb.WriteString("Generate a CEFR ")
 	sb.WriteString(params.CEFRLevel)
-	sb.WriteString(" dialog in ")
+	sb.WriteString(" level dialog entirely in ")
 	sb.WriteString(params.DialogLanguage)
-	sb.WriteString(" for learners whose input language is ")
+	sb.WriteString(". Both speakers must speak only in ")
+	sb.WriteString(params.DialogLanguage)
+	sb.WriteString(". The learner's native language is ")
 	sb.WriteString(params.InputLanguage)
-	sb.WriteString(". Include each of these words or phrases naturally: ")
+	sb.WriteString(", and you should naturally incorporate these words/phrases from ")
+	sb.WriteString(params.InputLanguage)
+	sb.WriteString(" into the ")
+	sb.WriteString(params.DialogLanguage)
+	sb.WriteString(" dialog context: ")
 	sb.WriteString(strings.Join(params.InputWords, ", "))
-	sb.WriteString(". Provide between 6 and 10 turns.")
+	sb.WriteString(". Provide between 6 and 10 turns. The entire dialog must be in ")
+	sb.WriteString(params.DialogLanguage)
+	sb.WriteString(" only.")
 	return sb.String()
 }
 

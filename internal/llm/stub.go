@@ -55,17 +55,20 @@ func (s *StubClient) GenerateDialog(ctx context.Context, params dialogs.Generate
 }
 
 func buildSentence(language, level, word string, idx int) string {
+	// Generate sentences entirely in the dialog language (monolingual)
 	prefix := map[string]string{
-		"es": "Hablemos",
-		"en": "Let's discuss",
-		"ru": "Давай обсудим",
+		"es": "Hablemos sobre",
+		"en": "Let's talk about",
+		"ru": "Давайте поговорим о",
 		"fi": "Puhutaan",
+		"de": "Lass uns über",
+		"fr": "Parlons de",
 	}
 	base := prefix[strings.ToLower(language)]
 	if base == "" {
-		base = "Let's explore"
+		base = "Let's discuss"
 	}
-	return fmt.Sprintf("%s (nivel %s) palabra %s #%d.", base, level, word, idx+1)
+	return fmt.Sprintf("%s %s (CEFR %s, turn %d).", base, word, level, idx+1)
 }
 
 func max(a, b int) int {
