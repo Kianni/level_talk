@@ -26,7 +26,8 @@ The app reads environment variables via `internal/config`:
 | `PORT` | HTTP port (default `8080`) | ❌ | `8080` |
 | `LLM_API_KEY` | OpenAI API key (switches off stub) | ❌ | `sk-proj-...` |
 | `LLM_MODEL` | OpenAI model identifier | ❌ | `gpt-4o-mini` |
-| `ELEVENLABS_API_KEY` | placeholder for ElevenLabs | ❌ | `elevenlabs-...` |
+| `ELEVENLABS_API_KEY` | ElevenLabs TTS API key | ❌ | `elevenlabs-...` |
+| `ELEVENLABS_VOICE_ID` | ElevenLabs voice identifier | ❌ | `EXAVITQu4vr4xnSDxMaL` |
 
 ## Environment setup
 
@@ -43,6 +44,12 @@ When running via Docker Compose the `.env` file is loaded automatically. For loc
 - Set `LLM_API_KEY` to your OpenAI key and `LLM_MODEL` to the desired chat model. `gpt-4o-mini` is a good balance of quality and cost for dialog generation.
 - When both variables are present, the server automatically switches from the deterministic stub to the real OpenAI client and calls `https://api.openai.com/v1/chat/completions`.
 - Leave either value empty to keep using the stubbed dialog generator (useful for local development without network calls).
+
+## Text-to-speech (ElevenLabs)
+
+- Provide `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID` (e.g. the Rachel voice `EXAVITQu4vr4xnSDxMaL`) to enable real audio synthesis.
+- When both values are set the app generates per-turn audio by calling `https://api.elevenlabs.io/v1/text-to-speech/{voice}` and embeds the resulting MP3 bytes as `data:` URLs.
+- Leave either value empty to keep the existing placeholder MP3 references.
 
 ## Running locally (without Docker)
 

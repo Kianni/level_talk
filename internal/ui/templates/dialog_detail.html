@@ -25,7 +25,9 @@
     <div class="turn">
       <strong>{{ .Speaker }}</strong>
       <p>{{ .Text }}</p>
-      <audio controls src="{{ .AudioURL }}"></audio>
+      <audio controls preload="metadata" src="{{ safeURL .AudioURL }}">
+        Your browser does not support the audio element.
+      </audio>
     </div>
     {{ end }}
   </section>

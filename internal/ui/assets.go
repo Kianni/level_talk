@@ -23,6 +23,9 @@ func ParseTemplates() (*template.Template, error) {
 		"shortID":     shortID,
 		"now":         time.Now,
 		"currentYear": currentYear,
+		"safeURL": func(u string) template.URL {
+			return template.URL(u)
+		},
 	}
 
 	root := template.New("base").Funcs(funcMap)

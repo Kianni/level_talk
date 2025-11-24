@@ -67,7 +67,20 @@ func run(logger *slog.Logger) error {
 		logger.Info("LLM API key or model missing; falling back to stub client")
 	}
 
-	dialogService := dialogs.NewService(repo, llmClient, tts.NewStubClient())
+	var ttsClient dialogs.TTSClient = tts.NewStubClient()
+	hasAPIKey := cfg.ElevenLabsAPIKey != ""
+	hasVoice := cfg.ElevenLabsVoice != ""
+	if hasAPIKey && hasVoice {
+		logger.Info("using ElevenLabs TTS client", slog.String("voice", cfg.ElevenLabsVoice))
+		ttsClient = tts.NewElevenLabsClient(logger, cfg.ElevenLabsAPIKey, cfg.ElevenLabsVoice, nil)
+	} else {
+		logger.Info("ElevenLabs API key or voice missing; using TTS stub",
+			slog.Bool("has_api_key", hasAPIKey),
+			slog.Bool("has_voice", hasVoice),
+		)
+	}
+
+	dialogService := dialogs.NewService(repo, llmClient, ttsClient)
 
 	tmpl, err := ui.ParseTemplates()
 	if err != nil {

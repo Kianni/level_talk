@@ -61,6 +61,7 @@ func (s *Service) CreateDialog(ctx context.Context, input CreateDialogInput) (Di
 
 	withAudio, err := s.tts.SynthesizeDialog(ctx, dlg)
 	if err != nil {
+		// Log error but don't expose internal details to user
 		return Dialog{}, fmt.Errorf("tts synthesize: %w", err)
 	}
 
