@@ -19,6 +19,7 @@ var (
 // Dialog represents a generated dialog with metadata.
 type Dialog struct {
 	ID             uuid.UUID
+	Title          string // Descriptive title expressing the dialog's idea/content
 	InputLanguage  string
 	DialogLanguage string
 	CEFRLevel      string

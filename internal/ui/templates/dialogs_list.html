@@ -2,10 +2,68 @@
 {{ if not .Dialogs }}
 <p class="muted">No dialogs yet. Generate one!</p>
 {{ else }}
+<div class="download-buttons-inline">
+  <button type="button" id="download-text-btn" class="button-link secondary" disabled>Download Selected Text</button>
+  <button type="button" id="download-audio-btn" class="button-link secondary" disabled>Download Selected Audio</button>
+</div>
+<script>
+(function() {
+  const selectAll = document.getElementById('select-all');
+  const checkboxes = document.querySelectorAll('.dialog-checkbox');
+  const downloadTextBtn = document.getElementById('download-text-btn');
+  const downloadAudioBtn = document.getElementById('download-audio-btn');
+  
+  function updateDownloadButtons() {
+    const selected = Array.from(checkboxes).filter(cb => cb.checked);
+    const hasSelection = selected.length > 0;
+    downloadTextBtn.disabled = !hasSelection;
+    downloadAudioBtn.disabled = !hasSelection;
+  }
+  
+  function updateSelectAll() {
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    const someChecked = Array.from(checkboxes).some(cb => cb.checked);
+    selectAll.checked = allChecked;
+    selectAll.indeterminate = someChecked && !allChecked;
+  }
+  
+  if (selectAll) {
+    selectAll.addEventListener('change', function() {
+      checkboxes.forEach(cb => cb.checked = selectAll.checked);
+      updateDownloadButtons();
+    });
+  }
+  
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', function() {
+      updateDownloadButtons();
+      updateSelectAll();
+    });
+  });
+  
+  downloadTextBtn.addEventListener('click', function() {
+    const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+    if (selected.length === 0) return;
+    const url = '/dialogs/download/text?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
+    window.location.href = url;
+  });
+  
+  downloadAudioBtn.addEventListener('click', function() {
+    const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+    if (selected.length === 0) return;
+    const url = '/dialogs/download/audio?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
+    window.location.href = url;
+  });
+  
+  updateDownloadButtons();
+  updateSelectAll();
+})();
+</script>
 <table class="dialog-table">
   <thead>
     <tr>
-      <th>ID</th>
+      <th><input type="checkbox" id="select-all" title="Select all"></th>
+      <th>Name</th>
       <th>Input</th>
       <th>Dialog</th>
       <th>CEFR</th>
@@ -16,7 +74,8 @@
   <tbody>
     {{ range .Dialogs }}
     <tr>
-      <td>{{ shortID .ID }}</td>
+      <td><input type="checkbox" name="dialog_id" value="{{ .ID }}" class="dialog-checkbox"></td>
+      <td>{{ dialogName .Title .InputLanguage .DialogLanguage .CEFRLevel .InputWords }}</td>
       <td>{{ .InputLanguage }}</td>
       <td>{{ .DialogLanguage }}</td>
       <td>{{ .CEFRLevel }}</td>

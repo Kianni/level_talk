@@ -103,7 +103,8 @@ type completionResponse struct {
 }
 
 type dialogJSON struct {
-	Turns []struct {
+	Title        string            `json:"title"`
+	Turns        []struct {
 		Speaker string `json:"speaker"`
 		Text    string `json:"text"`
 	} `json:"turns"`
@@ -123,7 +124,8 @@ func (c *OpenAIClient) GenerateDialog(ctx context.Context, params dialogs.Genera
 					"Both speakers must speak ONLY in the dialog language. " +
 					"IMPORTANT: You must FIRST translate all provided words/phrases from the input language into the target language, " +
 					"then use ONLY the translated versions in the dialog. Never include words from the input language in the dialog. " +
-					"Always respond ONLY with JSON matching this exact schema: {\"turns\":[{\"speaker\":\"string\",\"text\":\"string\"}],\"translations\":{\"exact_input_word\":\"translated_word\"}}. " +
+					"Always respond ONLY with JSON matching this exact schema: {\"title\":\"descriptive_title\",\"turns\":[{\"speaker\":\"string\",\"text\":\"string\"}],\"translations\":{\"exact_input_word\":\"translated_word\"}}. " +
+					"The \"title\" field is REQUIRED and must be a concise, descriptive title (3-8 words) that expresses the main idea or topic of the dialog in the dialog language. " +
 					"The translations object is REQUIRED and must contain an entry for EVERY input word/phrase provided, using the EXACT same spelling and casing as provided. Do not add commentary.",
 			},
 			{
@@ -218,6 +220,20 @@ func (c *OpenAIClient) GenerateDialog(ctx context.Context, params dialogs.Genera
 		return dialogs.Dialog{}, fmt.Errorf("openai returned empty turns after validation")
 	}
 
+	title := strings.TrimSpace(parsed.Title)
+	if title == "" {
+		// Generate a fallback title from the first turn if LLM didn't provide one
+		if len(turns) > 0 && len(turns[0].Text) > 0 {
+			firstText := strings.TrimSpace(turns[0].Text)
+			if len(firstText) > 50 {
+				firstText = firstText[:50] + "..."
+			}
+			title = firstText
+		} else {
+			title = "Dialog"
+		}
+	}
+
 	translations := parsed.Translations
 	if translations == nil {
 		translations = make(map[string]string)
@@ -257,6 +273,7 @@ func (c *OpenAIClient) GenerateDialog(ctx context.Context, params dialogs.Genera
 	)
 
 	return dialogs.Dialog{
+		Title:        title,
 		Turns:        turns,
 		Translations: normalizedTranslations,
 	}, nil
@@ -296,7 +313,7 @@ func buildUserPrompt(params dialogs.GenerateDialogParams) string {
 	sb.WriteString(strings.Join(params.InputWords, ", "))
 	sb.WriteString(") to its translation in ")
 	sb.WriteString(params.DialogLanguage)
-	sb.WriteString(". Example format: {\"turns\":[...],\"translations\":{\"")
+	sb.WriteString(". Example format: {\"title\":\"Shopping at the Market\",\"turns\":[...],\"translations\":{\"")
 	if len(params.InputWords) > 0 {
 		sb.WriteString(params.InputWords[0])
 		sb.WriteString("\":\"translation_here\"")

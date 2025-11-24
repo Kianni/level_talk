@@ -44,6 +44,7 @@ func (s *Service) CreateDialog(ctx context.Context, input CreateDialogInput) (Di
 	now := time.Now().UTC()
 	dlg := Dialog{
 		ID:             uuid.New(),
+		Title:          generated.Title,
 		InputLanguage:  input.InputLanguage,
 		DialogLanguage: input.DialogLanguage,
 		CEFRLevel:      input.CEFRLevel,

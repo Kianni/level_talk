@@ -218,3 +218,57 @@ button.htmx-request {
   color: #2563eb;
 }
 
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.download-buttons-inline {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: opacity 0.2s;
+}
+
+.button-link:hover {
+  opacity: 0.8;
+}
+
+.button-link.secondary {
+  background: #fff;
+  border: 1px solid #cbd5f5;
+  color: #0f172a;
+}
+
+.button-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  margin: 0;
+  accent-color: #2563eb;
+}
+
+.dialog-table th:first-child,
+.dialog-table td:first-child {
+  width: 40px;
+  text-align: center;
+}
+

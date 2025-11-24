@@ -50,7 +50,27 @@ func (s *StubClient) GenerateDialog(ctx context.Context, params dialogs.Generate
 		slog.String("words", strings.Join(params.InputWords, ",")),
 	)
 
+	// Generate a simple title based on the first word
+	title := "Dialog"
+	if len(params.InputWords) > 0 {
+		firstWord := strings.TrimSpace(params.InputWords[0])
+		titlePrefix := map[string]string{
+			"es": "Conversación sobre",
+			"en": "Conversation about",
+			"ru": "Разговор о",
+			"fi": "Keskustelu",
+			"de": "Gespräch über",
+			"fr": "Conversation sur",
+		}
+		prefix := titlePrefix[strings.ToLower(params.DialogLanguage)]
+		if prefix == "" {
+			prefix = "Conversation about"
+		}
+		title = fmt.Sprintf("%s %s", prefix, firstWord)
+	}
+
 	return dialogs.Dialog{
+		Title:        title,
 		Turns:        turns,
 		Translations: make(map[string]string), // Stub doesn't provide translations
 	}, nil

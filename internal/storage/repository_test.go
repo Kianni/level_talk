@@ -22,6 +22,7 @@ func TestDialogRepositoryCreate(t *testing.T) {
 	now := time.Now()
 	dlg := dialogs.Dialog{
 		ID:             uuid.New(),
+		Title:          "Conversación sobre casa",
 		InputLanguage:  "ru",
 		DialogLanguage: "es",
 		CEFRLevel:      "B1",
@@ -37,6 +38,7 @@ func TestDialogRepositoryCreate(t *testing.T) {
 	mock.ExpectExec("INSERT INTO dialogs").
 		WithArgs(
 			dlg.ID,
+			dlg.Title,
 			dlg.InputLanguage,
 			dlg.DialogLanguage,
 			dlg.CEFRLevel,
@@ -76,10 +78,10 @@ func TestDialogRepositorySearch(t *testing.T) {
 	translationsJSON, _ := json.Marshal(map[string]string{"дом": "casa"})
 
 	rows := sqlmock.NewRows([]string{
-		"id", "input_language", "dialog_language", "cefr_level", "input_words", "dialog_json", "translations", "created_at",
-	}).AddRow(uuid.New(), "ru", "es", "A2", wordsJSON, turnsJSON, translationsJSON, time.Now())
+		"id", "title", "input_language", "dialog_language", "cefr_level", "input_words", "dialog_json", "translations", "created_at",
+	}).AddRow(uuid.New(), "Conversación sobre casa", "ru", "es", "A2", wordsJSON, turnsJSON, translationsJSON, time.Now())
 
-	mock.ExpectQuery("SELECT id, input_language").
+	mock.ExpectQuery("SELECT id, COALESCE\\(title, ''\\), input_language").
 		WithArgs("ru", "es", "A2", 5).
 		WillReturnRows(rows)
 

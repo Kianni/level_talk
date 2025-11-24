@@ -26,6 +26,7 @@ func ParseTemplates() (*template.Template, error) {
 		"safeURL": func(u string) template.URL {
 			return template.URL(u)
 		},
+		"dialogName": dialogName,
 	}
 
 	root := template.New("base").Funcs(funcMap)
@@ -87,4 +88,29 @@ func shortID(v any) string {
 	default:
 		return fmt.Sprintf("%v", val)
 	}
+}
+
+// dialogName generates a concise name for a dialog.
+// Uses the stored title if available, otherwise falls back to metadata-based name.
+func dialogName(title, inputLang, dialogLang, cefr string, inputWords []string) string {
+	// If title is provided and not empty, use it
+	if strings.TrimSpace(title) != "" {
+		return strings.TrimSpace(title)
+	}
+	// Fallback to metadata-based name
+	var name strings.Builder
+	name.WriteString(strings.ToUpper(inputLang))
+	name.WriteString("→")
+	name.WriteString(strings.ToUpper(dialogLang))
+	name.WriteString(" ")
+	name.WriteString(cefr)
+	if len(inputWords) > 0 {
+		firstWord := strings.TrimSpace(inputWords[0])
+		if len(firstWord) > 15 {
+			firstWord = firstWord[:15] + "..."
+		}
+		name.WriteString(" - ")
+		name.WriteString(firstWord)
+	}
+	return name.String()
 }

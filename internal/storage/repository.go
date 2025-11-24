@@ -48,11 +48,12 @@ func (r *DialogRepository) Create(ctx context.Context, dlg dialogs.Dialog) error
 
 	const insertDialog = `
 		INSERT INTO dialogs (
-			id, input_language, dialog_language, cefr_level, input_words, dialog_json, translations, created_at
-		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+			id, title, input_language, dialog_language, cefr_level, input_words, dialog_json, translations, created_at
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 	`
 	if _, err := tx.ExecContext(ctx, insertDialog,
 		dlg.ID,
+		dlg.Title,
 		dlg.InputLanguage,
 		dlg.DialogLanguage,
 		dlg.CEFRLevel,
@@ -90,7 +91,7 @@ func (r *DialogRepository) Create(ctx context.Context, dlg dialogs.Dialog) error
 // GetByID fetches a dialog with all turns.
 func (r *DialogRepository) GetByID(ctx context.Context, id uuid.UUID) (dialogs.Dialog, error) {
 	const queryDialog = `
-		SELECT id, input_language, dialog_language, cefr_level, input_words, COALESCE(translations, '{}'::jsonb), created_at
+		SELECT id, COALESCE(title, ''), input_language, dialog_language, cefr_level, input_words, COALESCE(translations, '{}'::jsonb), created_at
 		FROM dialogs
 		WHERE id = $1
 	`
@@ -99,6 +100,7 @@ func (r *DialogRepository) GetByID(ctx context.Context, id uuid.UUID) (dialogs.D
 	var translationsJSON []byte
 	if err := r.db.QueryRowContext(ctx, queryDialog, id).Scan(
 		&dlg.ID,
+		&dlg.Title,
 		&dlg.InputLanguage,
 		&dlg.DialogLanguage,
 		&dlg.CEFRLevel,
@@ -152,7 +154,7 @@ func (r *DialogRepository) Search(ctx context.Context, filter dialogs.DialogFilt
 	args := []any{}
 
 	query.WriteString(`
-		SELECT id, input_language, dialog_language, cefr_level, input_words, dialog_json, COALESCE(translations, '{}'::jsonb), created_at
+		SELECT id, COALESCE(title, ''), input_language, dialog_language, cefr_level, input_words, dialog_json, COALESCE(translations, '{}'::jsonb), created_at
 		FROM dialogs
 		WHERE 1=1
 	`)
@@ -199,6 +201,7 @@ func (r *DialogRepository) Search(ctx context.Context, filter dialogs.DialogFilt
 		)
 		if err := rows.Scan(
 			&dlg.ID,
+			&dlg.Title,
 			&dlg.InputLanguage,
 			&dlg.DialogLanguage,
 			&dlg.CEFRLevel,
