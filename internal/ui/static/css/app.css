@@ -258,6 +258,16 @@ button.htmx-request {
   pointer-events: none;
 }
 
+.delete-btn {
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+
+.delete-btn:hover {
+  background: #fee2e2;
+  border-color: #dc2626;
+}
+
 input[type="checkbox"] {
   width: 18px;
   height: 18px;

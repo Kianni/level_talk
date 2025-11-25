@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: leveltalk
       POSTGRES_USER: leveltalk
-      POSTGRES_PASSWORD: leveltalk
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     ports:
       - "5432:5432"
     volumes:
@@ -20,7 +20,7 @@ services:
       - db
     environment:
       PORT: "${PORT:-8080}"
-      DB_DSN: "${DB_DSN:-postgres://leveltalk:leveltalk@db:5432/leveltalk?sslmode=disable}"
+      DB_DSN: "${DB_DSN:-}"
       LLM_API_KEY: "${LLM_API_KEY:-}"
       LLM_MODEL: "${LLM_MODEL:-}"
       ELEVENLABS_API_KEY: "${ELEVENLABS_API_KEY:-}"

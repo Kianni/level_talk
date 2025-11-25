@@ -55,6 +55,7 @@ func NewServer(logger *slog.Logger, service *dialogs.Service, templates *templat
 	r.Post("/dialogs", srv.handleCreateDialog)
 	r.Get("/dialogs/search", srv.handleSearch)
 	r.Get("/dialogs/{id}", srv.handleDetail)
+	r.Delete("/dialogs/{id}", srv.handleDelete)
 	r.Get("/dialogs/download/text", srv.handleDownloadText)
 	r.Get("/dialogs/download/audio", srv.handleDownloadAudio)
 	r.Get("/lang/{lang}", srv.handleSetLanguage)
@@ -118,6 +119,7 @@ func (s *Server) renderDialogList(w http.ResponseWriter, r *http.Request) {
 		Limit: 20,
 	}
 
+	// Read from both form values and query parameters (FormValue checks both)
 	if v := strings.TrimSpace(r.FormValue("input_language")); v != "" {
 		filter.InputLanguage = &v
 	}
@@ -170,6 +172,27 @@ func (s *Server) handleDetail(w http.ResponseWriter, r *http.Request) {
 		"UILanguages": s.getUILanguages(),
 		"BasePath":    s.basePath,
 	})
+}
+
+func (s *Server) handleDelete(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "id")
+	dialogID, err := uuid.Parse(idParam)
+	if err != nil {
+		s.clientError(w, http.StatusBadRequest, "invalid dialog id")
+		return
+	}
+
+	if err := s.dialogs.DeleteDialog(r.Context(), dialogID); err != nil {
+		if errors.Is(err, dialogs.ErrNotFound) {
+			s.clientError(w, http.StatusNotFound, "dialog not found")
+			return
+		}
+		s.serverError(w, err)
+		return
+	}
+
+	// After successful deletion, refresh the dialog list
+	s.renderDialogList(w, r)
 }
 
 type pageView struct {

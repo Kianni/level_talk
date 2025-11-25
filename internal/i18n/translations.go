@@ -92,6 +92,8 @@ var translations = Translations{
 		"dialog_language_label": "Dialog language",
 		"cefr":                "CEFR",
 		"tagline":             "Make your vocabulary speak — in any language, at any level.",
+		"delete":              "Delete",
+		"confirm_delete":       "Are you sure you want to delete this dialog? This action cannot be undone.",
 	},
 	LangFI: {
 		"app_name":           "LevelTalk",
@@ -124,6 +126,8 @@ var translations = Translations{
 		"dialog_language_label": "Vuoropuhelun kieli",
 		"cefr":                "CEFR",
 		"tagline":             "Anna sanastollesi ääni — millä tahansa kielellä, millä tahansa tasolla.",
+		"delete":              "Poista",
+		"confirm_delete":       "Haluatko varmasti poistaa tämän vuoropuhelun? Tätä toimintoa ei voi perua.",
 	},
 	LangSV: {
 		"app_name":           "LevelTalk",
@@ -156,6 +160,8 @@ var translations = Translations{
 		"dialog_language_label": "Dialogspråk",
 		"cefr":                "CEFR",
 		"tagline":             "Låt ditt ordförråd tala — på vilket språk som helst, på vilken nivå som helst.",
+		"delete":              "Radera",
+		"confirm_delete":       "Är du säker på att du vill radera denna dialog? Denna åtgärd kan inte ångras.",
 	},
 	LangRU: {
 		"app_name":           "LevelTalk",
@@ -188,6 +194,8 @@ var translations = Translations{
 		"dialog_language_label": "Язык диалога",
 		"cefr":                "CEFR",
 		"tagline":             "Заставьте свой словарный запас говорить — на любом языке, на любом уровне.",
+		"delete":              "Удалить",
+		"confirm_delete":       "Вы уверены, что хотите удалить этот диалог? Это действие нельзя отменить.",
 	},
 	LangES: {
 		"app_name":           "LevelTalk",
@@ -220,6 +228,8 @@ var translations = Translations{
 		"dialog_language_label": "Idioma del diálogo",
 		"cefr":                "CEFR",
 		"tagline":             "Haz que tu vocabulario hable — en cualquier idioma, en cualquier nivel.",
+		"delete":              "Eliminar",
+		"confirm_delete":       "¿Estás seguro de que quieres eliminar este diálogo? Esta acción no se puede deshacer.",
 	},
 	LangJA: {
 		"app_name":           "LevelTalk",
@@ -252,6 +262,8 @@ var translations = Translations{
 		"dialog_language_label": "対話言語",
 		"cefr":                "CEFR",
 		"tagline":             "語彙に声を与える — あらゆる言語で、あらゆるレベルで。",
+		"delete":              "削除",
+		"confirm_delete":       "この対話を削除してもよろしいですか？この操作は元に戻せません。",
 	},
 	LangDE: {
 		"app_name":           "LevelTalk",
@@ -284,6 +296,8 @@ var translations = Translations{
 		"dialog_language_label": "Dialogsprache",
 		"cefr":                "CEFR",
 		"tagline":             "Lassen Sie Ihren Wortschatz sprechen — in jeder Sprache, auf jedem Niveau.",
+		"delete":              "Löschen",
+		"confirm_delete":       "Sind Sie sicher, dass Sie diesen Dialog löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
 	},
 }
 

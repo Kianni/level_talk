@@ -231,3 +231,48 @@ func (r *DialogRepository) Search(ctx context.Context, filter dialogs.DialogFilt
 	}
 	return result, nil
 }
+
+// Delete removes a dialog and all its turns within a transaction.
+func (r *DialogRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin tx: %w", err)
+	}
+	defer tx.Rollback()
+
+	// First check if dialog exists
+	const checkDialog = `SELECT id FROM dialogs WHERE id = $1`
+	var foundID uuid.UUID
+	if err := tx.QueryRowContext(ctx, checkDialog, id).Scan(&foundID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return dialogs.ErrNotFound
+		}
+		return fmt.Errorf("check dialog: %w", err)
+	}
+
+	// Delete all turns first (foreign key constraint)
+	const deleteTurns = `DELETE FROM dialog_turns WHERE dialog_id = $1`
+	if _, err := tx.ExecContext(ctx, deleteTurns, id); err != nil {
+		return fmt.Errorf("delete turns: %w", err)
+	}
+
+	// Delete the dialog
+	const deleteDialog = `DELETE FROM dialogs WHERE id = $1`
+	result, err := tx.ExecContext(ctx, deleteDialog, id)
+	if err != nil {
+		return fmt.Errorf("delete dialog: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("get rows affected: %w", err)
+	}
+	if rowsAffected == 0 {
+		return dialogs.ErrNotFound
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit tx: %w", err)
+	}
+	return nil
+}

@@ -94,6 +94,11 @@ func (s *Service) SearchDialogs(ctx context.Context, filter DialogFilter) ([]Dia
 	return s.repo.Search(ctx, filter)
 }
 
+// DeleteDialog removes a dialog by id.
+func (s *Service) DeleteDialog(ctx context.Context, id uuid.UUID) error {
+	return s.repo.Delete(ctx, id)
+}
+
 func validateCreateInput(input CreateDialogInput) error {
 	if input.InputLanguage == "" || input.DialogLanguage == "" || input.CEFRLevel == "" {
 		return ErrInvalidInput

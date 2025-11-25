@@ -68,6 +68,7 @@ type Repository interface {
 	Create(ctx context.Context, dlg Dialog) error
 	GetByID(ctx context.Context, id uuid.UUID) (Dialog, error)
 	Search(ctx context.Context, filter DialogFilter) ([]Dialog, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 // LLMClient describes the interface to generate dialogs with an LLM.
