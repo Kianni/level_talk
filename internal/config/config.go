@@ -13,6 +13,7 @@ type Config struct {
 	LLMModel         string
 	ElevenLabsAPIKey string
 	ElevenLabsVoice  string
+	BasePath         string
 }
 
 // Load parses environment variables into Config and validates required values.
@@ -24,6 +25,7 @@ func Load() (Config, error) {
 		LLMModel:         os.Getenv("LLM_MODEL"),
 		ElevenLabsAPIKey: os.Getenv("ELEVENLABS_API_KEY"),
 		ElevenLabsVoice:  os.Getenv("ELEVENLABS_VOICE_ID"),
+		BasePath:         getEnv("BASE_PATH", ""),
 	}
 
 	if cfg.DBDSN == "" {

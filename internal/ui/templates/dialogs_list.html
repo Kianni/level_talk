@@ -8,6 +8,7 @@
 </div>
 <script>
 (function() {
+  const basePath = {{ if .BasePath }}{{ printf "%q" .BasePath }}{{ else }}''{{ end }};
   const selectAll = document.getElementById('select-all');
   const checkboxes = document.querySelectorAll('.dialog-checkbox');
   const downloadTextBtn = document.getElementById('download-text-btn');
@@ -44,14 +45,14 @@
   downloadTextBtn.addEventListener('click', function() {
     const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
     if (selected.length === 0) return;
-    const url = '/dialogs/download/text?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
+    const url = basePath + '/dialogs/download/text?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
     window.location.href = url;
   });
   
   downloadAudioBtn.addEventListener('click', function() {
     const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
     if (selected.length === 0) return;
-    const url = '/dialogs/download/audio?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
+    const url = basePath + '/dialogs/download/audio?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
     window.location.href = url;
   });
   
@@ -81,7 +82,7 @@
       <td>{{ .CEFRLevel }}</td>
       <td>{{ formatTime .CreatedAt }}</td>
       <td>
-        <a class="link" href="/dialogs/{{ .ID }}">{{ t $.Lang "open" }}</a>
+        <a class="link" href="{{ url $.BasePath "/dialogs/" }}{{ .ID }}">{{ t $.Lang "open" }}</a>
       </td>
     </tr>
     {{ end }}

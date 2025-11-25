@@ -28,10 +28,11 @@ type Server struct {
 	staticFS   http.FileSystem
 	languages  []string
 	cefrLevels []string
+	basePath   string
 }
 
 // NewServer constructs a chi router implementing http.Handler.
-func NewServer(logger *slog.Logger, service *dialogs.Service, templates *template.Template, staticFS http.FileSystem) http.Handler {
+func NewServer(logger *slog.Logger, service *dialogs.Service, templates *template.Template, staticFS http.FileSystem, basePath string) http.Handler {
 	srv := &Server{
 		logger:     logger,
 		dialogs:    service,
@@ -39,6 +40,7 @@ func NewServer(logger *slog.Logger, service *dialogs.Service, templates *templat
 		staticFS:   staticFS,
 		languages:  []string{"ru", "en", "es", "fi", "de", "fr"},
 		cefrLevels: []string{"A1", "A2", "B1", "B2", "C1", "C2"},
+		basePath:   basePath,
 	}
 
 	r := chi.NewRouter()
@@ -79,6 +81,7 @@ func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
 		"QueryParams":  queryParams,
 		"Lang":        lang,
 		"UILanguages": s.getUILanguages(),
+		"BasePath":    s.basePath,
 	}
 	s.renderPage(w, lang, "LevelTalk — multilingual dialogs", "index.html", payload)
 }
@@ -138,6 +141,7 @@ func (s *Server) renderDialogList(w http.ResponseWriter, r *http.Request) {
 		"Dialogs":     results,
 		"QueryParams": queryParams,
 		"Lang":        lang,
+		"BasePath":    s.basePath,
 	})
 }
 
@@ -164,6 +168,7 @@ func (s *Server) handleDetail(w http.ResponseWriter, r *http.Request) {
 		"Dialog":      dlg,
 		"Lang":        lang,
 		"UILanguages": s.getUILanguages(),
+		"BasePath":    s.basePath,
 	})
 }
 
@@ -172,6 +177,7 @@ type pageView struct {
 	Body        template.HTML
 	Lang        string
 	UILanguages []UILanguage
+	BasePath    string
 }
 
 type UILanguage struct {
@@ -192,6 +198,7 @@ func (s *Server) renderPage(w http.ResponseWriter, lang, title, contentTemplate 
 		Body:        template.HTML(body.String()),
 		Lang:        lang,
 		UILanguages: s.getUILanguages(),
+		BasePath:    s.basePath,
 	}
 	s.executeTemplate(w, "base.html", data)
 }
@@ -581,7 +588,10 @@ func (s *Server) handleSetLanguage(w http.ResponseWriter, r *http.Request) {
 	// Redirect back to referer or home
 	redirect := r.Header.Get("Referer")
 	if redirect == "" {
-		redirect = "/"
+		redirect = s.basePath
+		if redirect == "" {
+			redirect = "/"
+		}
 	}
 	http.Redirect(w, r, redirect, http.StatusSeeOther)
 }

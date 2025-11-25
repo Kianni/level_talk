@@ -1,7 +1,7 @@
 {{ define "index.html" }}
 <section class="panel">
   <h2>{{ t .Lang "create_dialog" }}</h2>
-  <form hx-post="/dialogs" hx-target="#dialog-list" hx-swap="innerHTML" class="grid grid-2">
+  <form hx-post="{{ url .BasePath "/dialogs" }}" hx-target="#dialog-list" hx-swap="innerHTML" class="grid grid-2">
     <label>
       {{ t .Lang "input_language" }}
       <select name="input_language" required>
@@ -39,7 +39,7 @@
 
 <section class="panel">
   <h2>{{ t .Lang "search_dialogs" }}</h2>
-  <form hx-get="/dialogs/search" hx-target="#dialog-list" hx-swap="innerHTML" class="grid grid-3">
+  <form hx-get="{{ url .BasePath "/dialogs/search" }}" hx-target="#dialog-list" hx-swap="innerHTML" class="grid grid-3">
     <label>
       {{ t .Lang "input_language" }}
       <select name="input_language">

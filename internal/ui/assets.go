@@ -32,6 +32,19 @@ func ParseTemplates() (*template.Template, error) {
 		"t": func(lang, key string) template.HTML {
 			return template.HTML(i18n.Get(lang, key))
 		},
+		"url": func(basePath, path string) string {
+			// Ensure path starts with /
+			if !strings.HasPrefix(path, "/") {
+				path = "/" + path
+			}
+			// If basePath is empty, return path as-is
+			if basePath == "" {
+				return path
+			}
+			// Remove trailing slash from basePath
+			basePath = strings.TrimSuffix(basePath, "/")
+			return basePath + path
+		},
 	}
 
 	root := template.New("base").Funcs(funcMap)

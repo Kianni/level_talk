@@ -89,7 +89,7 @@ func run(logger *slog.Logger) error {
 
 	staticFS := ui.StaticFiles()
 
-	handler := apphttp.NewServer(logger, dialogService, tmpl, staticFS)
+	handler := apphttp.NewServer(logger, dialogService, tmpl, staticFS, cfg.BasePath)
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,

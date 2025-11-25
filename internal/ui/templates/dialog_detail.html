@@ -1,6 +1,6 @@
 {{ define "dialog_detail.html" }}
 <article class="panel">
-  <a href="/" class="link">&larr; {{ t .Lang "back" }}</a>
+  <a href="{{ url .BasePath "/" }}" class="link">&larr; {{ t .Lang "back" }}</a>
   <h2>{{ dialogName .Dialog.Title .Dialog.InputLanguage .Dialog.DialogLanguage .Dialog.CEFRLevel .Dialog.InputWords }}</h2>
   <dl class="meta">
     <div>

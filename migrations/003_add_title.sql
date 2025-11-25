@@ -1,2 +1,3 @@
 ALTER TABLE dialogs ADD COLUMN IF NOT EXISTS title TEXT;
 
+
