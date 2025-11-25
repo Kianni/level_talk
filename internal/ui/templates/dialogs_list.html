@@ -22,6 +22,7 @@
   }
   
   function updateSelectAll() {
+    if (!selectAll) return;
     const allChecked = Array.from(checkboxes).every(cb => cb.checked);
     const someChecked = Array.from(checkboxes).some(cb => cb.checked);
     selectAll.checked = allChecked;
@@ -42,55 +43,26 @@
     });
   });
   
-  downloadTextBtn.addEventListener('click', function() {
-    const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-    if (selected.length === 0) return;
-    const url = basePath + '/dialogs/download/text?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
-    window.location.href = url;
-  });
+  if (downloadTextBtn) {
+    downloadTextBtn.addEventListener('click', function() {
+      const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+      if (selected.length === 0) return;
+      const url = basePath + '/dialogs/download/text?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
+      window.location.href = url;
+    });
+  }
   
-  downloadAudioBtn.addEventListener('click', function() {
-    const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
-    if (selected.length === 0) return;
-    const url = basePath + '/dialogs/download/audio?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
-    window.location.href = url;
-  });
+  if (downloadAudioBtn) {
+    downloadAudioBtn.addEventListener('click', function() {
+      const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+      if (selected.length === 0) return;
+      const url = basePath + '/dialogs/download/audio?' + selected.map(id => 'id=' + encodeURIComponent(id)).join('&');
+      window.location.href = url;
+    });
+  }
   
   updateDownloadButtons();
   updateSelectAll();
-  
-  // Handle delete buttons
-  document.querySelectorAll('.delete-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      const dialogId = this.getAttribute('data-dialog-id');
-      const confirmMsg = {{ if .Lang }}{{ printf "%q" (t .Lang "confirm_delete") }}{{ else }}'Are you sure you want to delete this dialog? This action cannot be undone.'{{ end }};
-      
-      if (!confirm(confirmMsg)) {
-        return;
-      }
-      
-      // Get current filter values from the search form
-      const searchForm = document.querySelector('form[hx-get*="/dialogs/search"]');
-      const formData = new FormData(searchForm || document.createElement('form'));
-      const params = new URLSearchParams();
-      
-      ['input_language', 'dialog_language', 'cefr_level'].forEach(function(key) {
-        const value = formData.get(key);
-        if (value) {
-          params.append(key, value);
-        }
-      });
-      
-      const queryString = params.toString();
-      const deleteUrl = basePath + '/dialogs/' + dialogId + (queryString ? '?' + queryString : '');
-      
-      // Use HTMX to delete and refresh the list
-      htmx.ajax('DELETE', deleteUrl, {
-        target: '#dialog-list',
-        swap: 'innerHTML'
-      });
-    });
-  });
 })();
 </script>
 <table class="dialog-table">
